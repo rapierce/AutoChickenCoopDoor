@@ -47,8 +47,8 @@ def set_Open_Relay_On():
    
     # Activate Close Relay to Low and Open Relay to High (High turns Relay on)
     GPIO.output(pin_Close, GPIO.LOW)     # Turn off Close Relay
-    time.sleep(2)                        # This insures close relay is off before turning on Open relay
-    GPIO.output(pin_Open, GPIO.HIGH)      # Activate Open relay
+    time.sleep(2)                        # This insures Close relay is off before turning on Open relay
+    GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
     
     # Start Timer for duration actuator will be activated
     timer = 0
