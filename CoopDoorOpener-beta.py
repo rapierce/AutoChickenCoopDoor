@@ -1,6 +1,6 @@
 # Automatic Chicken Coop Door Opener Beta 0.1
 
-# Import Tkinter Libraries
+# Import Libraries
 from tkinter import *
 import RPi.GPIO as GPIO
 import time
