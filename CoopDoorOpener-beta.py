@@ -17,8 +17,8 @@ def open_Coop():
     label_Door_Status['fg'] = "red"
 
     # Start set_Open_Relay_On in new thread to avoid window lockup
-    t1 = threading.Thread(target=set_Open_Relay_On)
-    t1.start()
+    t_Open = threading.Thread(target=set_Open_Relay_On)
+    t_Open.start()
 
 def close_Coop():
     global door_Status_Var
@@ -28,8 +28,8 @@ def close_Coop():
     label_Door_Status['fg'] = "red"
 
     # Start set_Close_Relay_On in new thread to avoid window lockup
-    t1 = threading.Thread(target=set_Close_Relay_On)
-    t1.start()
+    t_Close = threading.Thread(target=set_Close_Relay_On)
+    t_Close.start()
 
 def set_Open_Relay_On():
     global door_Status_Var
