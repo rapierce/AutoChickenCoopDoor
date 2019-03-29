@@ -92,7 +92,7 @@ def set_Close_Relay_On():
         time.sleep(1)
 
     # set Close relay back to low (off)
-    GPIO.output(pin_num, GPIO.LOW)
+    GPIO.output(pin_Close, GPIO.LOW)
 
     # Reset GPIO settings
     GPIO.cleanup()
