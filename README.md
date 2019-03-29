@@ -9,4 +9,4 @@ Currently this is done manually by selecting an open or close button from the pr
 goal is to give the user options to use either manual select buttons or set a timer to open and close at certain 
 times of the day with an open and close button override.
 
-## Future improvements will be to add a photocell and give the option to open and close the coop on sun up or sun down.
+Future improvements will be to add a photocell and give the option to open and close the coop on sun up or sun down.
