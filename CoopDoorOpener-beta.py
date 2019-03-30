@@ -2,6 +2,7 @@
 
 # Import Libraries
 from tkinter import *
+from tkinter import ttk
 import RPi.GPIO as GPIO
 import time
 import threading
@@ -15,6 +16,9 @@ def open_Coop():
     # Set buttons to DISABLE till operation ends
     open_Button['state'] = DISABLED
     close_Button['state'] = DISABLED
+
+    # Show Door Progress Bar
+    door_Progress.pack(pady=10)
 
     # Set Label variables to current status of Coop Door
     door_Status_Var.set("Opening Coop Door")
@@ -34,6 +38,9 @@ def close_Coop():
     # Set Label variables to current status of Coop Door
     door_Status_Var.set("Closing Coop Door")
     label_Door_Status['fg'] = "red"
+
+    # Show Progress bar
+    door_Progress.pack(pady=10)
 
     # Start set_Close_Relay_On in new thread to avoid window lockup
     t_Close = threading.Thread(target=set_Close_Relay_On)
@@ -56,9 +63,12 @@ def set_Open_Relay_On():
     
     # Start Timer for duration actuator will be activated
     timer = 0
-    while timer <= 10:
-        timer = timer + 1
-        time.sleep(1)
+    bar_Status = 0
+    while timer <= 50:
+        timer = timer + .5
+        bar_Status = bar_Status +1
+        door_Progress['value'] = bar_Status
+        time.sleep(.5)
 
     # set Open relay back to low (Turns Relay off)
     GPIO.output(pin_Open, GPIO.LOW)
@@ -74,6 +84,9 @@ def set_Open_Relay_On():
     # Turn Button Status back to NORMAL Operation
     open_Button['state'] = NORMAL
     close_Button['state'] = NORMAL
+
+    # Hide Door Progress Bar
+    door_Progress.pack_forget()
 
 def set_Close_Relay_On():
     global door_Status_Var
@@ -91,9 +104,12 @@ def set_Close_Relay_On():
 
     # Start Timer for duration actuator will be activated
     timer = 0
-    while timer <= 10:
-        timer = timer + 1
-        time.sleep(1)
+    bar_Status = 0
+    while timer <= 50:
+        timer = timer + .5
+        bar_Status = bar_Status + 1
+        door_Progress['value'] = bar_Status
+        time.sleep(.5)
 
     # set Close relay back to low (off)
     GPIO.output(pin_Close, GPIO.LOW)
@@ -110,12 +126,15 @@ def set_Close_Relay_On():
     open_Button['state'] = NORMAL
     close_Button['state'] = NORMAL
 
+    # Hide Progress bar
+    door_Progress.pack_forget()
+
 # Main Window
 window = Tk()
 window.title("Automatic Chicken Coop Door")
-window.iconbitmap(r'WiFiChicken.ico')
 window.geometry('350x350')
 window.configure()
+
 
 # Define Frames for Window
 top_Frame = Frame(window)
@@ -140,6 +159,9 @@ close_Button.pack(side=LEFT, padx=15)
 # Door Status Label
 label_Door_Status = Label (window, textvariable=door_Status_Var, font="none 14 bold", fg="red")
 label_Door_Status.pack()
+
+# Progress Bar Defined, but not turned on
+door_Progress = ttk.Progressbar(orient=HORIZONTAL,length=100, mode='determinate')
 
 #create status bar
 status_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
