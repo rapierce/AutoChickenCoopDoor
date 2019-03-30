@@ -1,6 +1,6 @@
 # Automatic Chicken Coop Door Opener Beta 0.1
 
-# Import Tkinter Libraries
+# Import Libraries
 from tkinter import *
 import RPi.GPIO as GPIO
 import time
@@ -12,24 +12,32 @@ door_Status_Var = ""
 def open_Coop():
     global door_Status_Var
 
+    # Set buttons to DISABLE till operation ends
+    open_Button['state'] = DISABLED
+    close_Button['state'] = DISABLED
+
     # Set Label variables to current status of Coop Door
     door_Status_Var.set("Opening Coop Door")
     label_Door_Status['fg'] = "red"
 
     # Start set_Open_Relay_On in new thread to avoid window lockup
-    t1 = threading.Thread(target=set_Open_Relay_On)
-    t1.start()
+    t_Open = threading.Thread(target=set_Open_Relay_On)
+    t_Open.start()
 
 def close_Coop():
     global door_Status_Var
+
+    # Set buttons to DISABLE till operation ends
+    open_Button['state'] = DISABLED
+    close_Button['state'] = DISABLED
 
     # Set Label variables to current status of Coop Door
     door_Status_Var.set("Closing Coop Door")
     label_Door_Status['fg'] = "red"
 
     # Start set_Close_Relay_On in new thread to avoid window lockup
-    t1 = threading.Thread(target=set_Close_Relay_On)
-    t1.start()
+    t_Close = threading.Thread(target=set_Close_Relay_On)
+    t_Close.start()
 
 def set_Open_Relay_On():
     global door_Status_Var
@@ -38,13 +46,13 @@ def set_Open_Relay_On():
     GPIO.setmode(GPIO.BCM)
 
     # init pin numbers
-    pin_num = [6]
+    pin_Open = [6]
 
     # set mode default state is 'low'
-    GPIO.setup(pin_num, GPIO.OUT) 
+    GPIO.setup(pin_Open, GPIO.OUT) 
    
-    # Activate Relay to High (High turns Relay on)
-    GPIO.output(pin_num, GPIO.HIGH)
+    # Activate Open Relay to High (High turns Relay on)
+    GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
     
     # Start Timer for duration actuator will be activated
     timer = 0
@@ -53,7 +61,7 @@ def set_Open_Relay_On():
         time.sleep(1)
 
     # set Open relay back to low (Turns Relay off)
-    GPIO.output(pin_num, GPIO.LOW)
+    GPIO.output(pin_Open, GPIO.LOW)
 
     # Reset GPIO settings
     GPIO.cleanup()
@@ -61,7 +69,11 @@ def set_Open_Relay_On():
     # Set Label Variables defining current state of Coop Door
     door_Status_Var.set("Coop Door is Open")
     label_Door_Status['fg'] = "green"
-    statusbar['text'] = "Coop Status = Open"
+    status_Bar['text'] = "Coop Status = Open"
+
+    # Turn Button Status back to NORMAL Operation
+    open_Button['state'] = NORMAL
+    close_Button['state'] = NORMAL
 
 def set_Close_Relay_On():
     global door_Status_Var
@@ -69,13 +81,13 @@ def set_Close_Relay_On():
     GPIO.setmode(GPIO.BCM)
 
     # # init pin numbers
-    pin_num = [22]
+    pin_Close = [22]
 
     # # set mode default state is 'low'
-    GPIO.setup(pin_num, GPIO.OUT) 
+    GPIO.setup(pin_Close, GPIO.OUT)
    
-    # # Activate Relay to High
-    GPIO.output(pin_num, GPIO.HIGH)
+    # # Activate Close Relay to High
+    GPIO.output(pin_Close, GPIO.HIGH)      # Activate Close relay
 
     # Start Timer for duration actuator will be activated
     timer = 0
@@ -84,7 +96,7 @@ def set_Close_Relay_On():
         time.sleep(1)
 
     # set Close relay back to low (off)
-    GPIO.output(pin_num, GPIO.LOW)
+    GPIO.output(pin_Close, GPIO.LOW)
 
     # Reset GPIO settings
     GPIO.cleanup()
@@ -92,7 +104,11 @@ def set_Close_Relay_On():
     # Set Label variables defining the current state of Coop Door
     door_Status_Var.set("Coop Door is Closed")
     label_Door_Status['fg'] = "green"
-    statusbar['text'] = "Coop Status = Closed"
+    status_Bar['text'] = "Coop Status = Closed"
+
+    # Turn Button Status back to NORMAL Operation
+    open_Button['state'] = NORMAL
+    close_Button['state'] = NORMAL
 
 # Main Window
 window = Tk()
@@ -116,18 +132,18 @@ header_Label = Label (top_Frame, text="Choose Open or Close Coop", font="none 12
 header_Label.pack(pady=15)
 
 #create Open and Close Buttons
-openButton = Button(middle_Frame, text="Open Coop", width=10, command=open_Coop) 
-openButton.pack(side=LEFT, padx=15)
-closeButton = Button(middle_Frame, text="Close Coop", width=10, command=close_Coop) 
-closeButton.pack(side=LEFT, padx=15)
+open_Button = Button(middle_Frame, text="Open Coop", width=10, command=open_Coop) 
+open_Button.pack(side=LEFT, padx=15)
+close_Button = Button(middle_Frame, text="Close Coop", width=10, command=close_Coop) 
+close_Button.pack(side=LEFT, padx=15)
 
 # Door Status Label
 label_Door_Status = Label (window, textvariable=door_Status_Var, font="none 14 bold", fg="red")
 label_Door_Status.pack()
 
 #create status bar
-statusbar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
-statusbar.pack(side=BOTTOM, fill=X)
+status_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
+status_Bar.pack(side=BOTTOM, fill=X)
 
 # Run main loop
 window.mainloop()
