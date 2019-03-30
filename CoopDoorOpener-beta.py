@@ -12,6 +12,10 @@ door_Status_Var = ""
 def open_Coop():
     global door_Status_Var
 
+    # Set buttons to DISABLE till operation ends
+    open_Button['state'] = DISABLED
+    close_Button['state'] = DISABLED
+
     # Set Label variables to current status of Coop Door
     door_Status_Var.set("Opening Coop Door")
     label_Door_Status['fg'] = "red"
@@ -22,6 +26,10 @@ def open_Coop():
 
 def close_Coop():
     global door_Status_Var
+
+    # Set buttons to DISABLE till operation ends
+    open_Button['state'] = DISABLED
+    close_Button['state'] = DISABLED
 
     # Set Label variables to current status of Coop Door
     door_Status_Var.set("Closing Coop Door")
@@ -63,6 +71,10 @@ def set_Open_Relay_On():
     label_Door_Status['fg'] = "green"
     statusbar['text'] = "Coop Status = Open"
 
+    # Turn Button Status back to NORMAL Operation
+    open_Button['state'] = NORMAL
+    close_Button['state'] = NORMAL
+
 def set_Close_Relay_On():
     global door_Status_Var
     # 
@@ -94,6 +106,10 @@ def set_Close_Relay_On():
     label_Door_Status['fg'] = "green"
     statusbar['text'] = "Coop Status = Closed"
 
+    # Turn Button Status back to NORMAL Operation
+    open_Button['state'] = NORMAL
+    close_Button['state'] = NORMAL
+
 # Main Window
 window = Tk()
 window.title("Automatic Chicken Coop Door")
@@ -116,18 +132,18 @@ header_Label = Label (top_Frame, text="Choose Open or Close Coop", font="none 12
 header_Label.pack(pady=15)
 
 #create Open and Close Buttons
-openButton = Button(middle_Frame, text="Open Coop", width=10, command=open_Coop) 
-openButton.pack(side=LEFT, padx=15)
-closeButton = Button(middle_Frame, text="Close Coop", width=10, command=close_Coop) 
-closeButton.pack(side=LEFT, padx=15)
+open_Button = Button(middle_Frame, text="Open Coop", width=10, command=open_Coop) 
+open_Button.pack(side=LEFT, padx=15)
+close_Button = Button(middle_Frame, text="Close Coop", width=10, command=close_Coop) 
+close_Button.pack(side=LEFT, padx=15)
 
 # Door Status Label
 label_Door_Status = Label (window, textvariable=door_Status_Var, font="none 14 bold", fg="red")
 label_Door_Status.pack()
 
 #create status bar
-statusbar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
-statusbar.pack(side=BOTTOM, fill=X)
+statu_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
+status_Bar.pack(side=BOTTOM, fill=X)
 
 # Run main loop
 window.mainloop()
