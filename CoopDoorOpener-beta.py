@@ -69,7 +69,7 @@ def set_Open_Relay_On():
     # Set Label Variables defining current state of Coop Door
     door_Status_Var.set("Coop Door is Open")
     label_Door_Status['fg'] = "green"
-    statusbar['text'] = "Coop Status = Open"
+    status_Bar['text'] = "Coop Status = Open"
 
     # Turn Button Status back to NORMAL Operation
     open_Button['state'] = NORMAL
@@ -104,7 +104,7 @@ def set_Close_Relay_On():
     # Set Label variables defining the current state of Coop Door
     door_Status_Var.set("Coop Door is Closed")
     label_Door_Status['fg'] = "green"
-    statusbar['text'] = "Coop Status = Closed"
+    status_Bar['text'] = "Coop Status = Closed"
 
     # Turn Button Status back to NORMAL Operation
     open_Button['state'] = NORMAL
@@ -142,7 +142,7 @@ label_Door_Status = Label (window, textvariable=door_Status_Var, font="none 14 b
 label_Door_Status.pack()
 
 #create status bar
-statu_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
+status_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
 status_Bar.pack(side=BOTTOM, fill=X)
 
 # Run main loop
