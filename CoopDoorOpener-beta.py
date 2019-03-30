@@ -39,15 +39,11 @@ def set_Open_Relay_On():
 
     # init pin numbers
     pin_Open = [6]
-    pin_Close = [22]
 
     # set mode default state is 'low'
     GPIO.setup(pin_Open, GPIO.OUT) 
-    GPIO.setup(pin_Close, GPIO.OUT)
    
-    # Activate Close Relay to Low and Open Relay to High (High turns Relay on)
-    GPIO.output(pin_Close, GPIO.LOW)     # Turn off Close Relay
-    time.sleep(2)                        # This insures Close relay is off before turning on Open relay
+    # Activate Open Relay to High (High turns Relay on)
     GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
     
     # Start Timer for duration actuator will be activated
@@ -73,16 +69,12 @@ def set_Close_Relay_On():
     GPIO.setmode(GPIO.BCM)
 
     # # init pin numbers
-    pin_Open = [6]
     pin_Close = [22]
 
     # # set mode default state is 'low'
-    GPIO.setup(pin_Open, GPIO.OUT) 
     GPIO.setup(pin_Close, GPIO.OUT)
    
-    # # Activate Relay to High
-    GPIO.output(pin_Open, GPIO.LOW)        # Turn off Open Relay
-    time.sleep(2)                          # This insures Open relay is off before turning on Close relay
+    # # Activate Close Relay to High
     GPIO.output(pin_Close, GPIO.HIGH)      # Activate Close relay
 
     # Start Timer for duration actuator will be activated
