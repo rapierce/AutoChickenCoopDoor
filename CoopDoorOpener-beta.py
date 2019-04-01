@@ -187,10 +187,10 @@ bottom_Frame.pack(padx=15, pady=15)
 
 # define Door Status
 door_Status_Var = StringVar()
-var_Open_Am_Pm = IntVar()
-var_Open_Am_Pm.set("1")
-var_Close_Am_Pm = IntVar()
-var_Close_Am_Pm.set("1")
+var_Open_Am_Pm = StringVar()
+var_Open_Am_Pm.set("AM")
+var_Close_Am_Pm = StringVar()
+var_Close_Am_Pm.set("PM")
 
 #create header label
 header_Label = Label (top_Frame, text="Choose Open or Close Coop", font="none 12 bold") 
@@ -237,9 +237,9 @@ input_Open_Minute = ttk.Spinbox(middle_Upper_Frame, values= ["00", "15", "30", "
      width=4, wrap=True) 
 input_Open_Minute.pack(side=LEFT, pady=5) 
 
-am_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=1, text="AM") 
+am_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value="AM", text="AM") 
 am_Open_Radiobutton.pack(side=TOP, padx=5)
-pm_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=2, text="PM") 
+pm_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value="PM", text="PM") 
 pm_Open_Radiobutton.pack(side=BOTTOM, padx=5)
 
 # Setup Labels and receive time inputs for opening the Coop
@@ -252,9 +252,9 @@ input_Close_Minute = ttk.Spinbox(middle_Lower_Frame, values= ["00", "15", "30", 
      width=4, wrap=True) 
 input_Close_Minute.pack(side=LEFT, pady=5) 
 
-am_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=1, text="AM") 
+am_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value="AM", text="AM") 
 am_Close_Radiobutton.pack(side=TOP, padx=5)
-pm_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=2, text="PM") 
+pm_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value="PM", text="PM") 
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
 set_Open_Label = Label(bottom_Frame, text="The Coop will Open at ")
