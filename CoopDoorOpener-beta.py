@@ -2,12 +2,38 @@
 
 # Import Libraries
 from tkinter import *
-from tkinter import ttk
-import RPi.GPIO as GPIO
+from tkinter import ttk 
+#  import RPi.GPIO as GPIO
 import time
 import threading
 
 door_Status_Var = ""
+time_Open_Close = ""
+
+
+# Defining Functions for turning Time Settings on and off
+
+def time_Setting():
+    test_Time_Variable = Label (bottom_Frame, textvariable=time_Open_Close) .pack()
+    input_Open_Hour['state'] = DISABLED
+    input_Open_Minute['state'] = DISABLED
+    if time_Open_Close == 0:
+        input_Open_Hour['state'] = DISABLED
+        input_Open_Minute['state'] = DISABLED
+        input_Open_Label['fg'] ='gray'
+    else:
+        enable_Time_Function()
+
+
+def disable_Time_Function():
+    input_Open_Hour['state'] = DISABLED
+    input_Open_Minute['state'] = DISABLED
+    input_Open_Label['fg'] ='gray'
+
+def enable_Time_Function():
+    input_Open_Hour['state'] = NORMAL
+    input_Open_Minute['state'] = NORMAL
+    input_Open_Label['fg'] ='black'
 
 # Defining Functions for Opening and Closing Coop door
 def open_Coop():
@@ -50,16 +76,16 @@ def set_Open_Relay_On():
     global door_Status_Var
     
     # 
-    GPIO.setmode(GPIO.BCM)
+    # GPIO.setmode(GPIO.BCM)
 
-    # init pin numbers
-    pin_Open = [6]
+    # # init pin numbers
+    # pin_Open = [6]
 
-    # set mode default state is 'low'
-    GPIO.setup(pin_Open, GPIO.OUT) 
+    # # set mode default state is 'low'
+    # GPIO.setup(pin_Open, GPIO.OUT) 
    
-    # Activate Open Relay to High (High turns Relay on)
-    GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
+    # # Activate Open Relay to High (High turns Relay on)
+    # GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
     
     # Start Timer for duration actuator will be activated
     timer = 0
@@ -71,10 +97,10 @@ def set_Open_Relay_On():
         time.sleep(.5)
 
     # set Open relay back to low (Turns Relay off)
-    GPIO.output(pin_Open, GPIO.LOW)
+    # GPIO.output(pin_Open, GPIO.LOW)
 
     # Reset GPIO settings
-    GPIO.cleanup()
+    # GPIO.cleanup()
 
     # Set Label Variables defining current state of Coop Door
     door_Status_Var.set("Coop Door is Open")
@@ -91,16 +117,16 @@ def set_Open_Relay_On():
 def set_Close_Relay_On():
     global door_Status_Var
     # 
-    GPIO.setmode(GPIO.BCM)
+    # GPIO.setmode(GPIO.BCM)
 
-    # # init pin numbers
-    pin_Close = [22]
+    # # # init pin numbers
+    # pin_Close = [22]
 
-    # # set mode default state is 'low'
-    GPIO.setup(pin_Close, GPIO.OUT)
+    # # # set mode default state is 'low'
+    # GPIO.setup(pin_Close, GPIO.OUT)
    
-    # # Activate Close Relay to High
-    GPIO.output(pin_Close, GPIO.HIGH)      # Activate Close relay
+    # # # Activate Close Relay to High
+    # GPIO.output(pin_Close, GPIO.HIGH)      # Activate Close relay
 
     # Start Timer for duration actuator will be activated
     timer = 0
@@ -112,10 +138,10 @@ def set_Close_Relay_On():
         time.sleep(.5)
 
     # set Close relay back to low (off)
-    GPIO.output(pin_Close, GPIO.LOW)
+    # GPIO.output(pin_Close, GPIO.LOW)
 
     # Reset GPIO settings
-    GPIO.cleanup()
+    # GPIO.cleanup()
 
     # Set Label variables defining the current state of Coop Door
     door_Status_Var.set("Coop Door is Closed")
@@ -132,7 +158,7 @@ def set_Close_Relay_On():
 # Main Window
 window = Tk()
 window.title("Automatic Chicken Coop Door")
-window.geometry('350x350')
+window.geometry('350x400')
 window.configure()
 
 
@@ -140,28 +166,72 @@ window.configure()
 top_Frame = Frame(window)
 top_Frame.pack(padx=15, pady=15)
 
-middle_Frame = Frame(window)
-middle_Frame.pack(padx=15, pady=15)
+middle_Upper_Frame = Frame(window)
+middle_Upper_Frame.pack(padx=15, pady=15)
+
+middle_Lower_Frame = Frame(window)
+middle_Lower_Frame.pack(padx=15, pady=15)
+
+bottom_Frame = Frame(window)
+bottom_Frame.pack(padx=15, pady=15)
 
 # define Door Status
 door_Status_Var = StringVar()
+var_Open_Am_Pm = IntVar()
+var_Open_Am_Pm.set("1")
+var_Close_Am_Pm = IntVar()
+var_Close_Am_Pm.set("1")
 
 #create header label
 header_Label = Label (top_Frame, text="Choose Open or Close Coop", font="none 12 bold") 
 header_Label.pack(pady=15)
 
 #create Open and Close Buttons
-open_Button = Button(middle_Frame, text="Open Coop", width=10, command=open_Coop) 
+open_Button = Button(top_Frame, text="Open Coop", width=10, command=open_Coop) 
 open_Button.pack(side=LEFT, padx=15)
-close_Button = Button(middle_Frame, text="Close Coop", width=10, command=close_Coop) 
+close_Button = Button(top_Frame, text="Close Coop", width=10, command=close_Coop) 
 close_Button.pack(side=LEFT, padx=15)
 
 # Door Status Label
-label_Door_Status = Label (window, textvariable=door_Status_Var, font="none 14 bold", fg="red")
+label_Door_Status = Label (bottom_Frame, textvariable=door_Status_Var, font="none 14 bold", fg="red")
 label_Door_Status.pack()
 
 # Progress Bar Defined, but not turned on
-door_Progress = ttk.Progressbar(orient=HORIZONTAL,length=100, mode='determinate')
+door_Progress = ttk.Progressbar(bottom_Frame, orient=HORIZONTAL,length=100, mode='determinate')
+
+# Set times to open and close Coop
+time_Open_Close = IntVar()
+time_Check_Button = Checkbutton(middle_Upper_Frame, text="Choose to set operation times", variable=time_Open_Close, command=time_Setting)
+time_Check_Button.pack()
+
+# input_Open_Hour = ttk.Combobox(middle_Frame, text = "Select time to Open Coop Door", values = ["1", "2", "3", "4", "5", "6",
+#                                                                                       "7", "8", "9", "10", "11", "12"]) .pack()
+# Setup Labels and receive time inputs for opening the Coop
+input_Open_Label = Label(middle_Upper_Frame, text="Set time to open coop  ", font="none 12", fg="black")
+input_Open_Label.pack(side=LEFT, pady=5)
+input_Open_Hour = ttk.Spinbox(middle_Upper_Frame, from_ = "1", to= "12", width=4, wrap=True) 
+input_Open_Hour.pack(side=LEFT, pady=10)      
+input_Open_Minute = ttk.Spinbox(middle_Upper_Frame, values= ["00", "15", "30", "45"], width=4, wrap=True) 
+input_Open_Minute.pack(side=LEFT, pady=10) 
+am_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=1, text="AM") .pack(side=TOP, padx=5)
+pm_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=2, text="PM") .pack(side=BOTTOM, padx=5)
+
+# Setup Labels and receive time inputs for opening the Coop
+input_Close_Label = Label(middle_Lower_Frame, fg="black", text="Set time to Close coop  ", font="none 12")
+input_Close_Label.pack(side=LEFT, pady=5)
+input_Close_Hour = ttk.Spinbox(middle_Lower_Frame, from_ = "1", to= "12", width=4, wrap=True) 
+input_Close_Hour.pack(side=LEFT, pady=10)   
+input_Close_Minute = ttk.Spinbox(middle_Lower_Frame, values= ["00", "15", "30", "45"], width=4, wrap=True) 
+input_Close_Minute.pack(side=LEFT, pady=10) 
+am_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=1, text="AM") .pack(side=TOP, padx=5)
+pm_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=2, text="PM") .pack(side=BOTTOM, padx=5)
+
+set_Open_Label = Label(bottom_Frame, text="The Coop will Open at ")
+set_Open_Label.pack()              
+
+
+
+# test_Time_Variable = Label (bottom_Frame, textvariable=time_Open_Close) .pack()
 
 #create status bar
 status_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
