@@ -185,11 +185,28 @@ middle_Lower_Frame.pack(padx=15, pady=15)
 bottom_Frame = Frame(window)
 bottom_Frame.pack(padx=15, pady=15)
 
-# define Door Status
+# Define Variables
+# Door Status Variable
 door_Status_Var = StringVar()
+
+# Set Variable for Open/Close Time Checkbox
+time_Open_Close = IntVar()
+time_Open_Close.set(0)
+
+# Set Variables for Open/Close Time Settings
+var_Open_Hour = StringVar()
+var_Open_Minute = StringVar()
+var_Close_Hour = StringVar()
+var_Close_Minute = StringVar()
+var_Open_Hour.set("6")
+var_Open_Minute.set("00")
+var_Close_Hour.set("8")
+var_Close_Minute.set("00")
+
+# Set Variables for AM/PM Radio Buttons
 var_Open_Am_Pm = StringVar()
-var_Open_Am_Pm.set("AM")
 var_Close_Am_Pm = StringVar()
+var_Open_Am_Pm.set("AM")
 var_Close_Am_Pm.set("PM")
 
 #create header label
@@ -210,24 +227,11 @@ label_Door_Status.pack()
 door_Progress = ttk.Progressbar(bottom_Frame, orient=HORIZONTAL,length=100, mode='determinate')
 
 # Setup Variable and Checkbox.  Checkbox to enable "open and close" time settings
-time_Open_Close = IntVar()
-time_Open_Close.set(0)
 time_Check_Button = Checkbutton(middle_Upper_Frame, text="Choose to set operation times", \
     variable=time_Open_Close, command = time_Setting)
 time_Check_Button.pack()
 
-# Set Variables and default values for Open and Closing times.
-var_Open_Hour = StringVar()
-var_Open_Minute = StringVar()
-var_Close_Hour = StringVar()
-var_Close_Minute = StringVar()
-
-var_Open_Hour.set("6")
-var_Open_Minute.set("00")
-var_Close_Hour.set("8")
-var_Close_Minute.set("00")
-
-# Setup Labels and receive time inputs for opening the Coop
+# Setup Labels, Spinbox, and Radio Buttons to receive time inputs for opening the Coop
 input_Open_Label = Label(middle_Upper_Frame, text="Set time to open coop  ", font="none 12", fg="black")
 input_Open_Label.pack(side=LEFT, pady=5)
 input_Open_Hour = ttk.Spinbox(middle_Upper_Frame, from_ = "1", to= "12",textvariable = var_Open_Hour, \
@@ -242,7 +246,7 @@ am_Open_Radiobutton.pack(side=TOP, padx=5)
 pm_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value="PM", text="PM") 
 pm_Open_Radiobutton.pack(side=BOTTOM, padx=5)
 
-# Setup Labels and receive time inputs for opening the Coop
+# Setup Labels, Spinbox, and Radio Buttons to receive time inputs for closing the Coop
 input_Close_Label = Label(middle_Lower_Frame, fg="black", text="Set time to Close coop  ", font="none 12")
 input_Close_Label.pack(side=LEFT, pady=5)
 input_Close_Hour = ttk.Spinbox(middle_Lower_Frame, from_ = "1", to= "12", textvariable = var_Close_Hour, \
@@ -257,14 +261,15 @@ am_Close_Radiobutton.pack(side=TOP, padx=5)
 pm_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value="PM", text="PM") 
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
+
+# Set Labels for time set and countdown timer for next Open/Close Operation
 set_Open_Label = Label(bottom_Frame, text="The Coop will Open at ")
 set_Open_Label.pack()        
 set_Close_Label = Label(bottom_Frame, text="The Coop will Close at ")
 set_Close_Label.pack()       
 
+# Call time_Setting function to enable or disable time settings operation
 time_Setting()
-
-# test_Time_Variable = Label (bottom_Frame, textvariable=time_Open_Close) .pack()
 
 #create status bar
 status_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
