@@ -14,26 +14,36 @@ time_Open_Close = ""
 # Defining Functions for turning Time Settings on and off
 
 def time_Setting():
-    test_Time_Variable = Label (bottom_Frame, textvariable=time_Open_Close) .pack()
-    input_Open_Hour['state'] = DISABLED
-    input_Open_Minute['state'] = DISABLED
-    if time_Open_Close == 0:
+    if time_Open_Close.get() == 0:
         input_Open_Hour['state'] = DISABLED
         input_Open_Minute['state'] = DISABLED
+        am_Open_Radiobutton['state'] = DISABLED
+        pm_Open_Radiobutton['state'] = DISABLED
         input_Open_Label['fg'] ='gray'
+        input_Close_Hour['state'] = DISABLED
+        input_Close_Minute['state'] = DISABLED
+        am_Close_Radiobutton['state'] = DISABLED
+        pm_Close_Radiobutton['state'] = DISABLED
+        input_Close_Label['fg'] ='gray'
+        set_Open_Label.pack_forget() 
+        set_Close_Label.pack_forget() 
+        
     else:
-        enable_Time_Function()
+        input_Open_Hour['state'] = NORMAL
+        input_Open_Minute['state'] = NORMAL
+        am_Open_Radiobutton['state'] = NORMAL
+        pm_Open_Radiobutton['state'] = NORMAL
+        input_Open_Label['fg'] ='black'
+        input_Close_Hour['state'] = NORMAL
+        input_Close_Minute['state'] = NORMAL
+        am_Close_Radiobutton['state'] = NORMAL
+        pm_Close_Radiobutton['state'] = NORMAL
+        input_Close_Label['fg'] ='black'
+        set_Open_Label.pack() 
+        set_Close_Label.pack() 
 
 
-def disable_Time_Function():
-    input_Open_Hour['state'] = DISABLED
-    input_Open_Minute['state'] = DISABLED
-    input_Open_Label['fg'] ='gray'
-
-def enable_Time_Function():
-    input_Open_Hour['state'] = NORMAL
-    input_Open_Minute['state'] = NORMAL
-    input_Open_Label['fg'] ='black'
+   
 
 # Defining Functions for Opening and Closing Coop door
 def open_Coop():
@@ -199,37 +209,60 @@ label_Door_Status.pack()
 # Progress Bar Defined, but not turned on
 door_Progress = ttk.Progressbar(bottom_Frame, orient=HORIZONTAL,length=100, mode='determinate')
 
-# Set times to open and close Coop
+# Setup Variable and Checkbox.  Checkbox to enable "open and close" time settings
 time_Open_Close = IntVar()
-time_Check_Button = Checkbutton(middle_Upper_Frame, text="Choose to set operation times", variable=time_Open_Close, command=time_Setting)
+time_Open_Close.set(0)
+time_Check_Button = Checkbutton(middle_Upper_Frame, text="Choose to set operation times", \
+    variable=time_Open_Close, command = time_Setting)
 time_Check_Button.pack()
 
-# input_Open_Hour = ttk.Combobox(middle_Frame, text = "Select time to Open Coop Door", values = ["1", "2", "3", "4", "5", "6",
-#                                                                                       "7", "8", "9", "10", "11", "12"]) .pack()
+# Set Variables and default values for Open and Closing times.
+var_Open_Hour = StringVar()
+var_Open_Minute = StringVar()
+var_Close_Hour = StringVar()
+var_Close_Minute = StringVar()
+
+var_Open_Hour.set("6")
+var_Open_Minute.set("00")
+var_Close_Hour.set("8")
+var_Close_Minute.set("00")
+
 # Setup Labels and receive time inputs for opening the Coop
 input_Open_Label = Label(middle_Upper_Frame, text="Set time to open coop  ", font="none 12", fg="black")
 input_Open_Label.pack(side=LEFT, pady=5)
-input_Open_Hour = ttk.Spinbox(middle_Upper_Frame, from_ = "1", to= "12", width=4, wrap=True) 
-input_Open_Hour.pack(side=LEFT, pady=10)      
-input_Open_Minute = ttk.Spinbox(middle_Upper_Frame, values= ["00", "15", "30", "45"], width=4, wrap=True) 
-input_Open_Minute.pack(side=LEFT, pady=10) 
-am_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=1, text="AM") .pack(side=TOP, padx=5)
-pm_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=2, text="PM") .pack(side=BOTTOM, padx=5)
+input_Open_Hour = ttk.Spinbox(middle_Upper_Frame, from_ = "1", to= "12",textvariable = var_Open_Hour, \
+     width=4, wrap=True) 
+input_Open_Hour.pack(side=LEFT, pady=5)      
+input_Open_Minute = ttk.Spinbox(middle_Upper_Frame, values= ["00", "15", "30", "45"], textvariable = var_Open_Minute, \
+     width=4, wrap=True) 
+input_Open_Minute.pack(side=LEFT, pady=5) 
+
+am_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=1, text="AM") 
+am_Open_Radiobutton.pack(side=TOP, padx=5)
+pm_Open_Radiobutton = ttk.Radiobutton(middle_Upper_Frame, variable=var_Open_Am_Pm, value=2, text="PM") 
+pm_Open_Radiobutton.pack(side=BOTTOM, padx=5)
 
 # Setup Labels and receive time inputs for opening the Coop
 input_Close_Label = Label(middle_Lower_Frame, fg="black", text="Set time to Close coop  ", font="none 12")
 input_Close_Label.pack(side=LEFT, pady=5)
-input_Close_Hour = ttk.Spinbox(middle_Lower_Frame, from_ = "1", to= "12", width=4, wrap=True) 
-input_Close_Hour.pack(side=LEFT, pady=10)   
-input_Close_Minute = ttk.Spinbox(middle_Lower_Frame, values= ["00", "15", "30", "45"], width=4, wrap=True) 
-input_Close_Minute.pack(side=LEFT, pady=10) 
-am_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=1, text="AM") .pack(side=TOP, padx=5)
-pm_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=2, text="PM") .pack(side=BOTTOM, padx=5)
+input_Close_Hour = ttk.Spinbox(middle_Lower_Frame, from_ = "1", to= "12", textvariable = var_Close_Hour, \
+    width=4, wrap=True) 
+input_Close_Hour.pack(side=LEFT, pady=5)   
+input_Close_Minute = ttk.Spinbox(middle_Lower_Frame, values= ["00", "15", "30", "45"], textvariable = var_Close_Minute, \
+     width=4, wrap=True) 
+input_Close_Minute.pack(side=LEFT, pady=5) 
+
+am_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=1, text="AM") 
+am_Close_Radiobutton.pack(side=TOP, padx=5)
+pm_Close_Radiobutton = ttk.Radiobutton(middle_Lower_Frame, variable=var_Close_Am_Pm, value=2, text="PM") 
+pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
 set_Open_Label = Label(bottom_Frame, text="The Coop will Open at ")
-set_Open_Label.pack()              
+set_Open_Label.pack()        
+set_Close_Label = Label(bottom_Frame, text="The Coop will Close at ")
+set_Close_Label.pack()       
 
-
+time_Setting()
 
 # test_Time_Variable = Label (bottom_Frame, textvariable=time_Open_Close) .pack()
 
