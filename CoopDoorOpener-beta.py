@@ -232,13 +232,6 @@ open_Button.pack(side=LEFT, padx=15)
 close_Button = Button(main_Frame1, text="Close Coop", width=10, command=close_Coop) 
 close_Button.pack(side=LEFT, padx=15)
 
-# Door Status Label
-label_Door_Status = Label (main_Frame8, textvariable=door_Status_Var, font="none 14 bold", fg="red")
-label_Door_Status.pack()
-
-# Progress Bar Defined, but not turned on
-door_Progress = ttk.Progressbar(main_Frame8, orient=HORIZONTAL,length=100, mode='determinate')
-
 # Setup Variable and Checkbox.  Checkbox to enable "open and close" time settings
 time_Check_Button = Checkbutton(main_Frame3, variable=time_Open_Close, command = time_Setting)
 time_Check_Label = Label(main_Frame3, text = "Click to set time Operation")
@@ -281,6 +274,13 @@ set_Open_Label = Label(main_Frame6, text="The Coop will Open at ")
 set_Open_Label.pack()        
 set_Close_Label = Label(main_Frame7, text="The Coop will Close at ")
 set_Close_Label.pack()       
+
+# Door Status Label
+label_Door_Status = Label (main_Frame8, textvariable=door_Status_Var, font="none 14 bold", fg="red")
+label_Door_Status.pack()
+
+# Progress Bar Defined, but not turned on
+door_Progress = ttk.Progressbar(main_Frame8, orient=HORIZONTAL,length=100, mode='determinate')
 
 # Call time_Setting function to enable or disable time settings operation
 time_Setting()
