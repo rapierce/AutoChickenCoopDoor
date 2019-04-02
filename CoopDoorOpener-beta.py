@@ -6,41 +6,77 @@ from tkinter import ttk
 #  import RPi.GPIO as GPIO
 import time
 import threading
+from datetime import datetime
 
 door_Status_Var = ""
 time_Open_Close = ""
+current_Time = (datetime.now().strftime('%I:%M:%S %p'))
 
 
 # Defining Functions for turning Time Settings on and off
 
-def time_Setting():
+def enable_Disable_Time_Setting():
     if time_Open_Close.get() == 0:
-        input_Open_Hour['state'] = DISABLED
-        input_Open_Minute['state'] = DISABLED
-        am_Open_Radiobutton['state'] = DISABLED
-        pm_Open_Radiobutton['state'] = DISABLED
-        input_Open_Label['fg'] ='gray'
-        input_Close_Hour['state'] = DISABLED
-        input_Close_Minute['state'] = DISABLED
-        am_Close_Radiobutton['state'] = DISABLED
-        pm_Close_Radiobutton['state'] = DISABLED
-        input_Close_Label['fg'] ='gray'
+        disable_Time_Functions()
+    else:
+        enable_Time_Functions()
+
+def disable_Time_Functions():
+    input_Open_Hour['state'] = DISABLED
+    input_Open_Minute['state'] = DISABLED
+    am_Open_Radiobutton['state'] = DISABLED
+    pm_Open_Radiobutton['state'] = DISABLED
+    input_Open_Label['fg'] ='gray'
+    input_Close_Hour['state'] = DISABLED
+    input_Close_Minute['state'] = DISABLED
+    am_Close_Radiobutton['state'] = DISABLED
+    pm_Close_Radiobutton['state'] = DISABLED
+    input_Close_Label['fg'] ='gray'
+    apply_Time_Button['state'] = DISABLED
+    
+    if time_Open_Close.get() == 0:
+        change_Time_Button['state'] = DISABLED
         set_Open_Label.pack_forget() 
         set_Close_Label.pack_forget() 
-        
-    else:
-        input_Open_Hour['state'] = NORMAL
-        input_Open_Minute['state'] = NORMAL
-        am_Open_Radiobutton['state'] = NORMAL
-        pm_Open_Radiobutton['state'] = NORMAL
-        input_Open_Label['fg'] ='black'
-        input_Close_Hour['state'] = NORMAL
-        input_Close_Minute['state'] = NORMAL
-        am_Close_Radiobutton['state'] = NORMAL
-        pm_Close_Radiobutton['state'] = NORMAL
-        input_Close_Label['fg'] ='black'
-        set_Open_Label.pack() 
-        set_Close_Label.pack() 
+        set_Open_Time_Label.pack_forget()
+        set_Close_Time_Label.pack_forget()
+    
+
+def enable_Time_Functions():
+    input_Open_Hour['state'] = NORMAL
+    input_Open_Minute['state'] = NORMAL
+    am_Open_Radiobutton['state'] = NORMAL
+    pm_Open_Radiobutton['state'] = NORMAL
+    input_Open_Label['fg'] ='black'
+    input_Close_Hour['state'] = NORMAL
+    input_Close_Minute['state'] = NORMAL
+    am_Close_Radiobutton['state'] = NORMAL
+    pm_Close_Radiobutton['state'] = NORMAL
+    input_Close_Label['fg'] ='black'
+    change_Time_Button['state'] = NORMAL
+    apply_Time_Button['state'] = NORMAL
+    set_Open_Label.pack(side=LEFT) 
+    set_Close_Label.pack(side=LEFT) 
+    set_Open_Time_Label.pack(side=LEFT)
+    set_Close_Time_Label.pack(side=LEFT)
+
+def format_Time():
+    var_Time_Format = ":"
+    open_Hour = var_Open_Hour.get()
+    open_Minute = var_Open_Minute.get()
+    open_AM_PM = var_Open_Am_Pm.get()
+    time_Open_String_Concat = open_Hour + var_Time_Format + open_Minute + open_AM_PM
+    parsed_Open_Time = datetime.strptime(time_Open_String_Concat, '%I:%M%p')
+    formatted_Open_Time.set(datetime.strftime(parsed_Open_Time, '%I:%M%p'))
+
+    close_Hour = var_Close_Hour.get()
+    close_Minute = var_Close_Minute.get()
+    close_AM_PM = var_Close_Am_Pm.get()
+    time_Close_String_Concat = close_Hour + var_Time_Format + close_Minute + close_AM_PM
+    parsed_Close_Time = datetime.strptime(time_Close_String_Concat, '%I:%M%p')
+    formatted_Close_Time.set(datetime.strftime(parsed_Close_Time, '%I:%M%p'))
+
+    disable_Time_Functions()
 
 
    
@@ -168,7 +204,7 @@ def set_Close_Relay_On():
 # Main Window
 window = Tk()
 window.title("Automatic Chicken Coop Door")
-window.geometry('350x400')
+window.geometry('350x450')
 window.configure()
 
 
@@ -197,6 +233,12 @@ main_Frame7.pack(padx=10, pady=5)
 main_Frame8 = Frame(window)
 main_Frame8.pack(padx=10, pady=5)
 
+main_Frame9 = Frame(window)
+main_Frame9.pack(padx=10, pady=5)
+
+main_Frame10 = Frame(window)
+main_Frame10.pack(padx=10, pady=5)
+
 
 # Define Variables
 # Door Status Variable
@@ -211,6 +253,8 @@ var_Open_Hour = StringVar()
 var_Open_Minute = StringVar()
 var_Close_Hour = StringVar()
 var_Close_Minute = StringVar()
+formatted_Open_Time = StringVar()
+formatted_Close_Time = StringVar()
 var_Open_Hour.set("6")
 var_Open_Minute.set("00")
 var_Close_Hour.set("8")
@@ -233,7 +277,7 @@ close_Button = Button(main_Frame1, text="Close Coop", width=10, command=close_Co
 close_Button.pack(side=LEFT, padx=15)
 
 # Setup Variable and Checkbox.  Checkbox to enable "open and close" time settings
-time_Check_Button = Checkbutton(main_Frame3, variable=time_Open_Close, command = time_Setting)
+time_Check_Button = Checkbutton(main_Frame3, variable=time_Open_Close, command = enable_Disable_Time_Setting)
 time_Check_Label = Label(main_Frame3, text = "Click to set time Operation")
 time_Check_Button.pack(side=LEFT)
 time_Check_Label.pack(side=LEFT)
@@ -244,7 +288,7 @@ input_Open_Label.pack(side=LEFT, ipadx=3, pady=5)
 input_Open_Hour = ttk.Spinbox(main_Frame4, from_ = "1", to= "12",textvariable = var_Open_Hour, \
      width=4, wrap=True) 
 input_Open_Hour.pack(side=LEFT, pady=5)      
-input_Open_Minute = ttk.Spinbox(main_Frame4, values= ["00", "15", "30", "45"], textvariable = var_Open_Minute, \
+input_Open_Minute = ttk.Spinbox(main_Frame4, from_=00, to=59, format="%02.0f", textvariable = var_Open_Minute, \
      width=4, wrap=True) 
 input_Open_Minute.pack(side=LEFT, pady=5) 
 
@@ -259,7 +303,7 @@ input_Close_Label.pack(side=LEFT, pady=5)
 input_Close_Hour = ttk.Spinbox(main_Frame5, from_ = "1", to= "12", textvariable = var_Close_Hour, \
     width=4, wrap=True) 
 input_Close_Hour.pack(side=LEFT, pady=5)   
-input_Close_Minute = ttk.Spinbox(main_Frame5, values= ["00", "15", "30", "45"], textvariable = var_Close_Minute, \
+input_Close_Minute = ttk.Spinbox(main_Frame5, from_=00, to=59, format="%02.0f", textvariable = var_Close_Minute, \
      width=4, wrap=True) 
 input_Close_Minute.pack(side=LEFT, pady=5) 
 
@@ -268,26 +312,32 @@ am_Close_Radiobutton.pack(side=TOP, padx=5)
 pm_Close_Radiobutton = ttk.Radiobutton(main_Frame5, variable=var_Close_Am_Pm, value="PM", text="PM") 
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
+change_Time_Button = Button(main_Frame6, text="Change Times", width=10, command=enable_Disable_Time_Setting) 
+change_Time_Button.pack(side=LEFT, padx=15)
+apply_Time_Button = Button(main_Frame6, text="Apply", width=10, command=format_Time) 
+apply_Time_Button.pack(side=LEFT, padx=15)
 
 # Set Labels for time set and countdown timer for next Open/Close Operation
-set_Open_Label = Label(main_Frame6, text="The Coop will Open at ")
-set_Open_Label.pack()        
-set_Close_Label = Label(main_Frame7, text="The Coop will Close at ")
-set_Close_Label.pack()       
+set_Open_Label = Label(main_Frame7, text="The Coop will Open at ")
+set_Open_Time_Label = Label(main_Frame7, textvariable = formatted_Open_Time)              
+set_Close_Label = Label(main_Frame8, text="The Coop will Close at ")      
+set_Close_Time_Label = Label(main_Frame8, textvariable = formatted_Close_Time)
 
 # Door Status Label
-label_Door_Status = Label (main_Frame8, textvariable=door_Status_Var, font="none 14 bold", fg="red")
+label_Door_Status = Label (main_Frame10, textvariable=door_Status_Var, font="none 14 bold", fg="red")
 label_Door_Status.pack()
 
 # Progress Bar Defined, but not turned on
-door_Progress = ttk.Progressbar(main_Frame8, orient=HORIZONTAL,length=100, mode='determinate')
+door_Progress = ttk.Progressbar(main_Frame10, orient=HORIZONTAL,length=100, mode='determinate')
 
 # Call time_Setting function to enable or disable time settings operation
-time_Setting()
+enable_Disable_Time_Setting()
 
 #create status bar
-status_Bar = Label(window, text="Coop Status (unknown)", relief=SUNKEN, anchor=W)
+status_Bar = Label(window, text="Coop Status = Unknown", relief=SUNKEN, anchor=W)
 status_Bar.pack(side=BOTTOM, fill=X)
+
+print (current_Time)
 
 # Run main loop
 window.mainloop()
