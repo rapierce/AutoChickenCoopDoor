@@ -312,7 +312,7 @@ am_Close_Radiobutton.pack(side=TOP, padx=5)
 pm_Close_Radiobutton = ttk.Radiobutton(main_Frame5, variable=var_Close_Am_Pm, value="PM", text="PM") 
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
-change_Time_Button = Button(main_Frame6, text="Change Times", width=10, command=enable_Disable_Time_Setting) 
+change_Time_Button = Button(main_Frame6, text="Set Times", width=10, command=enable_Disable_Time_Setting) 
 change_Time_Button.pack(side=LEFT, padx=15)
 apply_Time_Button = Button(main_Frame6, text="Apply", width=10, command=format_Time) 
 apply_Time_Button.pack(side=LEFT, padx=15)
