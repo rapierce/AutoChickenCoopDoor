@@ -32,10 +32,12 @@ def disable_Time_Functions():
     am_Close_Radiobutton['state'] = DISABLED
     pm_Close_Radiobutton['state'] = DISABLED
     input_Close_Label['fg'] ='gray'
-    apply_Time_Button['state'] = DISABLED
+    change_Time_Button.pack()
+    # apply_Time_Button['state'] = DISABLED
+    apply_Time_Button.pack_forget()
     
     if time_Open_Close.get() == 0:
-        change_Time_Button['state'] = DISABLED
+        change_Time_Button.pack_forget()
         set_Open_Label.pack_forget() 
         set_Close_Label.pack_forget() 
         set_Open_Time_Label.pack_forget()
@@ -43,6 +45,8 @@ def disable_Time_Functions():
     
 
 def enable_Time_Functions():
+    change_Time_Button.pack_forget()
+    apply_Time_Button.pack()
     input_Open_Hour['state'] = NORMAL
     input_Open_Minute['state'] = NORMAL
     am_Open_Radiobutton['state'] = NORMAL
@@ -277,10 +281,9 @@ close_Button = Button(main_Frame1, text="Close Coop", width=10, command=close_Co
 close_Button.pack(side=LEFT, padx=15)
 
 # Setup Variable and Checkbox.  Checkbox to enable "open and close" time settings
-time_Check_Button = Checkbutton(main_Frame3, variable=time_Open_Close, command = enable_Disable_Time_Setting)
-time_Check_Label = Label(main_Frame3, text = "Click to set time Operation")
-time_Check_Button.pack(side=LEFT)
-time_Check_Label.pack(side=LEFT)
+time_Check_Button = Checkbutton(main_Frame3, text = "Click to set time Operation", variable=time_Open_Close, \
+    command = enable_Disable_Time_Setting)
+time_Check_Button.pack(side=BOTTOM, fill=X)
 
 # Setup Labels, Spinbox, and Radio Buttons to receive time inputs for opening the Coop
 input_Open_Label = Label(main_Frame4, text="Set time to open coop ", font="none 12", fg="black")
@@ -313,9 +316,9 @@ pm_Close_Radiobutton = ttk.Radiobutton(main_Frame5, variable=var_Close_Am_Pm, va
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
 change_Time_Button = Button(main_Frame6, text="Set Times", width=10, command=enable_Disable_Time_Setting) 
-change_Time_Button.pack(side=LEFT, padx=15)
+# change_Time_Button.pack(side=LEFT, padx=15)
 apply_Time_Button = Button(main_Frame6, text="Apply", width=10, command=format_Time) 
-apply_Time_Button.pack(side=LEFT, padx=15)
+# apply_Time_Button.pack(side=LEFT, padx=15)
 
 # Set Labels for time set and countdown timer for next Open/Close Operation
 set_Open_Label = Label(main_Frame7, text="The Coop will Open at ")
