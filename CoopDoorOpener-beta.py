@@ -63,23 +63,46 @@ def enable_Time_Functions():
     set_Close_Time_Label.pack(side=LEFT)
 
 def format_Time():
-    var_Time_Format = ":"
+    # Pull variables from Open/Close timeset spinbox
     open_Hour = var_Open_Hour.get()
     open_Minute = var_Open_Minute.get()
     open_AM_PM = var_Open_Am_Pm.get()
-    time_Open_String_Concat = open_Hour + var_Time_Format + open_Minute + open_AM_PM
-    parsed_Open_Time = datetime.strptime(time_Open_String_Concat, '%I:%M%p')
-    formatted_Open_Time.set(datetime.strftime(parsed_Open_Time, '%I:%M%p'))
-
     close_Hour = var_Close_Hour.get()
     close_Minute = var_Close_Minute.get()
     close_AM_PM = var_Close_Am_Pm.get()
-    time_Close_String_Concat = close_Hour + var_Time_Format + close_Minute + close_AM_PM
-    parsed_Close_Time = datetime.strptime(time_Close_String_Concat, '%I:%M%p')
-    formatted_Close_Time.set(datetime.strftime(parsed_Close_Time, '%I:%M%p'))
+    var_Second = "00" # Added for seconds
+
+    # Get current time
+    current_Time = datetime.now()
+    
+    # Formatting variables received from Open/Close time set spinbox
+    time_String_Open_Concat = open_Hour + open_Minute + var_Second + open_AM_PM
+    time_String_Close_Concat = close_Hour + close_Minute + var_Second + close_AM_PM
+    parsed_Open_Time = datetime.strptime(time_String_Open_Concat, '%I%M%S%p')
+    parsed_Close_Time = datetime.strptime(time_String_Close_Concat, '%I%M%S%p')
+    formatted_Open_Time = datetime.strftime(parsed_Open_Time, '%H:%M:%S')
+    formatted_Close_Time = datetime.strftime(parsed_Close_Time, '%H:%M:%S')
+    formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
     disable_Time_Functions()
+    
+def open_Countdown():
 
+    # Get current time
+    current_Time = datetime.now()
+    
+    # Time calculation for getting time till close (Output: Date Hour:Min:Sec:MicroSec)
+    calc_Close_Time = parsed_Close_Time - current_Time
+
+    # Striping out Date and MicroSec and calculating Hours, Min, and Seconds
+    total_Seconds = calc_Close_Time.seconds
+    calc_Hours, remainder = divmod(total_Seconds, 3600)
+    calc_Minutes, calc_Seconds = divmod(remainder, 60)
+
+    # Setting format for output
+    formatted_Calc_Time = '%s:%s:%s' % (calc_Hours, calc_Minutes, calc_Seconds)
+
+    # Output
 
    
 
