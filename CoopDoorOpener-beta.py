@@ -10,7 +10,6 @@ from datetime import datetime
 
 door_Status_Var = ""
 time_Open_Close = ""
-current_Time = (datetime.now().strftime('%I:%M:%S %p'))
 
 
 # Defining Functions for turning Time Settings on and off
@@ -33,7 +32,6 @@ def disable_Time_Functions():
     pm_Close_Radiobutton['state'] = DISABLED
     input_Close_Label['fg'] ='gray'
     change_Time_Button.pack()
-    # apply_Time_Button['state'] = DISABLED
     apply_Time_Button.pack_forget()
     
     if time_Open_Close.get() == 0:
@@ -259,6 +257,8 @@ var_Close_Hour = StringVar()
 var_Close_Minute = StringVar()
 formatted_Open_Time = StringVar()
 formatted_Close_Time = StringVar()
+
+# Default variable settins
 var_Open_Hour.set("6")
 var_Open_Minute.set("00")
 var_Close_Hour.set("8")
@@ -316,9 +316,7 @@ pm_Close_Radiobutton = ttk.Radiobutton(main_Frame5, variable=var_Close_Am_Pm, va
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
 change_Time_Button = Button(main_Frame6, text="Set Times", width=10, command=enable_Disable_Time_Setting) 
-# change_Time_Button.pack(side=LEFT, padx=15)
 apply_Time_Button = Button(main_Frame6, text="Apply", width=10, command=format_Time) 
-# apply_Time_Button.pack(side=LEFT, padx=15)
 
 # Set Labels for time set and countdown timer for next Open/Close Operation
 set_Open_Label = Label(main_Frame7, text="The Coop will Open at ")
@@ -339,8 +337,6 @@ enable_Disable_Time_Setting()
 #create status bar
 status_Bar = Label(window, text="Coop Status = Unknown", relief=SUNKEN, anchor=W)
 status_Bar.pack(side=BOTTOM, fill=X)
-
-print (current_Time)
 
 # Run main loop
 window.mainloop()
