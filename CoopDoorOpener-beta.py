@@ -14,6 +14,10 @@ time_Open_Close = ""
 
 # Defining Functions for turning Time Settings on and off
 
+def get_Current_Time():
+    curr_Time = datetime.now()
+    return curr_Time
+
 def enable_Disable_Time_Setting():
     if time_Open_Close.get() == 0:
         disable_Time_Functions()
