@@ -10,6 +10,7 @@ from datetime import datetime
 
 door_Status_Var = ""
 time_Open_Close = ""
+timer_Thread_Switch = True
 
 
 # Defining Functions for turning Time Settings on and off
@@ -19,10 +20,20 @@ def get_Current_Time():
     return curr_Time
 
 def enable_Disable_Time_Setting():
+    global timer_Thread_Switch
+    timer_Thread_Switch = False
     if time_Open_Close.get() == 0:
         disable_Time_Functions()
     else:
         enable_Time_Functions()
+
+def set_Timer_Thread():
+    global timer_Thread_Switch
+    timer_Thread_Switch = True
+    timer_Thread = threading.Thread(target=format_Time)
+    timer_Thread.daemon = True
+    timer_Thread.start()
+
 
 def disable_Time_Functions():
     input_Open_Hour['state'] = DISABLED
@@ -67,6 +78,10 @@ def enable_Time_Functions():
     set_Close_Time_Label.pack(side=LEFT)
 
 def format_Time():
+    global timer_Thread_Switch
+    disable_Time_Functions()
+    current_Time = get_Current_Time()
+
     # Pull variables from Open/Close timeset spinbox
     open_Hour = var_Open_Hour.get()
     open_Minute = var_Open_Minute.get()
@@ -75,9 +90,7 @@ def format_Time():
     close_Minute = var_Close_Minute.get()
     close_AM_PM = var_Close_Am_Pm.get()
     var_Second = "00" # Added for seconds
-
-    # Get current time
-    current_Time = datetime.now()
+    total_Seconds = 1
     
     # Formatting variables received from Open/Close time set spinbox
     time_String_Open_Concat = open_Hour + open_Minute + var_Second + open_AM_PM
@@ -85,30 +98,46 @@ def format_Time():
     parsed_Open_Time = datetime.strptime(time_String_Open_Concat, '%I%M%S%p')
     parsed_Close_Time = datetime.strptime(time_String_Close_Concat, '%I%M%S%p')
     formatted_Open_Time = datetime.strftime(parsed_Open_Time, '%H:%M:%S')
+    open_Time_Twelve_Hour.set(datetime.strftime(parsed_Open_Time, '%I:%M:%S%p'))
     formatted_Close_Time = datetime.strftime(parsed_Close_Time, '%H:%M:%S')
+    close_Time_Twelve_Hour.set(datetime.strftime(parsed_Close_Time, '%I:%M:%S%p'))
     formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
-    disable_Time_Functions()
-    
-def open_Countdown():
+    if formatted_Current_Time < formatted_Close_Time and formatted_Current_Time > formatted_Open_Time \
+        or formatted_Current_Time < formatted_Close_Time and formatted_Close_Time < formatted_Open_Time:
+        while total_Seconds != 0 and timer_Thread_Switch == True:
+            current_Time = get_Current_Time()
+            calc_Close_Time = parsed_Close_Time - current_Time
+            formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
-    # Get current time
-    current_Time = datetime.now()
-    
-    # Time calculation for getting time till close (Output: Date Hour:Min:Sec:MicroSec)
-    calc_Close_Time = parsed_Close_Time - current_Time
+            total_Seconds = calc_Close_Time.seconds
+            calc_Hours, remainder = divmod(total_Seconds, 3600)
+            calc_Minutes, calc_Seconds = divmod(remainder, 60)
 
-    # Striping out Date and MicroSec and calculating Hours, Min, and Seconds
-    total_Seconds = calc_Close_Time.seconds
-    calc_Hours, remainder = divmod(total_Seconds, 3600)
-    calc_Minutes, calc_Seconds = divmod(remainder, 60)
+            formatted_Calc_Time.set('Time till Close {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
+            set_Countdown_Label.pack()
 
-    # Setting format for output
-    formatted_Calc_Time = '%s:%s:%s' % (calc_Hours, calc_Minutes, calc_Seconds)
+            time.sleep(1)
+        if timer_Thread_Switch == True:
+            close_Coop()
+        
+    else:
+        while total_Seconds != 0 and timer_Thread_Switch == True:
+            current_Time = get_Current_Time()
+            calc_Open_Time = parsed_Open_Time - current_Time
+            formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
-    # Output
+            total_Seconds = calc_Open_Time.seconds
+            calc_Hours, remainder = divmod(total_Seconds, 3600)
+            calc_Minutes, calc_Seconds = divmod(remainder, 60)
 
-   
+            formatted_Calc_Time.set('Time till Open {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
+            set_Countdown_Label.pack()
+
+            time.sleep(1)
+        if timer_Thread_Switch == True:
+            open_Coop()
+        
 
 # Defining Functions for Opening and Closing Coop door
 def open_Coop():
@@ -189,6 +218,10 @@ def set_Open_Relay_On():
     # Hide Door Progress Bar
     door_Progress.pack_forget()
 
+    if time_Open_Close.get() == 1:
+        format_Time()
+
+
 def set_Close_Relay_On():
     global door_Status_Var
     # 
@@ -230,10 +263,15 @@ def set_Close_Relay_On():
     # Hide Progress bar
     door_Progress.pack_forget()
 
+    if time_Open_Close.get() == 1:
+        format_Time()
+
+
+
 # Main Window
 window = Tk()
 window.title("Automatic Chicken Coop Door")
-window.geometry('350x450')
+window.geometry('350x475')
 window.configure()
 
 
@@ -284,6 +322,9 @@ var_Close_Hour = StringVar()
 var_Close_Minute = StringVar()
 formatted_Open_Time = StringVar()
 formatted_Close_Time = StringVar()
+open_Time_Twelve_Hour = StringVar()
+close_Time_Twelve_Hour = StringVar()
+formatted_Calc_Time = StringVar()
 
 # Default variable settins
 var_Open_Hour.set("6")
@@ -343,13 +384,15 @@ pm_Close_Radiobutton = ttk.Radiobutton(main_Frame5, variable=var_Close_Am_Pm, va
 pm_Close_Radiobutton.pack(side=BOTTOM, padx=5)
 
 change_Time_Button = Button(main_Frame6, text="Set Times", width=10, command=enable_Disable_Time_Setting) 
-apply_Time_Button = Button(main_Frame6, text="Apply", width=10, command=format_Time) 
+apply_Time_Button = Button(main_Frame6, text="Apply", width=10, command=set_Timer_Thread) 
 
 # Set Labels for time set and countdown timer for next Open/Close Operation
 set_Open_Label = Label(main_Frame7, text="The Coop will Open at ")
-set_Open_Time_Label = Label(main_Frame7, textvariable = formatted_Open_Time)              
+set_Open_Time_Label = Label(main_Frame7, textvariable = open_Time_Twelve_Hour)              
 set_Close_Label = Label(main_Frame8, text="The Coop will Close at ")      
-set_Close_Time_Label = Label(main_Frame8, textvariable = formatted_Close_Time)
+set_Close_Time_Label = Label(main_Frame8, textvariable = close_Time_Twelve_Hour)
+
+set_Countdown_Label = Label(main_Frame9, textvariable = formatted_Calc_Time, font='none 12 bold', fg='green')
 
 # Door Status Label
 label_Door_Status = Label (main_Frame10, textvariable=door_Status_Var, font="none 14 bold", fg="red")
