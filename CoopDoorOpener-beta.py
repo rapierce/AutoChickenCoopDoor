@@ -12,6 +12,7 @@ door_Status_Var = ""
 time_Open_Close = ""
 timer_Thread_Switch = True
 open_Coop_Check_Switch = True
+door_In_Operation = False
 
 
 # Defining Functions for turning Time Settings on and off
@@ -55,6 +56,9 @@ def disable_Time_Functions():
         set_Close_Label.pack_forget() 
         set_Open_Time_Label.pack_forget()
         set_Close_Time_Label.pack_forget()
+        door_Schedule_Off_Label.pack_forget()
+        set_Countdown_Label.pack_forget()
+    
     
 def enable_Time_Functions():
     change_Time_Button.pack_forget()
@@ -78,12 +82,20 @@ def enable_Time_Functions():
 
 def coop_Check_Switch_Loop(clos_Time, op_Time):
     global open_Coop_Check_Switch
+    global door_In_Operation
+    global timer_Thread_Switch
+    door_Schedule_Off_Label.pack_forget()
+    set_Countdown_Label.pack_forget()
     total_Seconds = 1
-    if open_Coop_Check_Switch == False:
-        while open_Coop_Check_Switch == False and timer_Thread_Switch == True and total_Seconds !=0:
+    while door_In_Operation == True:
+        pass
+    if timer_Thread_Switch == True and open_Coop_Check_Switch == False:
+        while timer_Thread_Switch == True and open_Coop_Check_Switch == False and total_Seconds !=0:
             label_Door_Status['fg'] = 'red'
             schedule_Off_Var.set('Open Coop to continue schedule')
             door_Schedule_Off_Label.pack()
+
+            print (timer_Thread_Switch)
 
             current_Time = get_Current_Time()
             calc_Close_Time = clos_Time - current_Time
@@ -95,10 +107,11 @@ def coop_Check_Switch_Loop(clos_Time, op_Time):
             formatted_Calc_Time.set('Normal Operations will resume in {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
             set_Countdown_Label.pack()
 
-            time.sleep(1)
+            time.sleep(.5)
             door_Schedule_Off_Label.pack_forget()
+            time.sleep(.5)
 
-    elif open_Coop_Check_Switch == True:
+    elif timer_Thread_Switch == True and open_Coop_Check_Switch == True:
         while open_Coop_Check_Switch == True and timer_Thread_Switch == True and total_Seconds !=0:
             label_Door_Status['fg'] = 'red'
             schedule_Off_Var.set('Close Coop to continue schedule')
@@ -114,14 +127,17 @@ def coop_Check_Switch_Loop(clos_Time, op_Time):
             formatted_Calc_Time.set('Normal Operations will resume in {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
             set_Countdown_Label.pack()
 
-            time.sleep(1)
+            time.sleep(.5)
             door_Schedule_Off_Label.pack_forget()
+            time.sleep(.5)
 
-    set_Timer_Thread()
+    set_Countdown_Label.pack_forget()
+    enable_Disable_Time_Setting()
 
 def format_Time():
     global timer_Thread_Switch
     global open_Coop_Check_Switch
+    global door_In_Operation
     disable_Time_Functions()
     current_Time = get_Current_Time()
 
@@ -146,60 +162,76 @@ def format_Time():
     close_Time_Twelve_Hour.set(datetime.strftime(parsed_Close_Time, '%I:%M:%S%p'))
     formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
+    while door_In_Operation == True:
+        pass
+
     if formatted_Current_Time < formatted_Close_Time and formatted_Current_Time > formatted_Open_Time \
         or formatted_Current_Time < formatted_Close_Time and formatted_Close_Time < formatted_Open_Time:
 
-        if open_Coop_Check_Switch == False:
+        if timer_Thread_Switch == True and open_Coop_Check_Switch == False:
             coop_Timer_Loop_Thread = threading.Thread(target=coop_Check_Switch_Loop(parsed_Close_Time, parsed_Open_Time))
             coop_Timer_Loop_Thread.daemon = True
             coop_Timer_Loop_Thread.start()
-            # coop_Check_Switch_Loop(False)
-            
-        while total_Seconds != 0 and timer_Thread_Switch == True and open_Coop_Check_Switch == True:
-            door_Schedule_Off_Label.pack_forget()
-            current_Time = get_Current_Time()
-            calc_Close_Time = parsed_Close_Time - current_Time
-            formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
+        else:    
+            while total_Seconds != 0 and timer_Thread_Switch == True and open_Coop_Check_Switch == True:
+                door_Schedule_Off_Label.pack_forget()
+                current_Time = get_Current_Time()
+                calc_Close_Time = parsed_Close_Time - current_Time
+                formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
-            total_Seconds = calc_Close_Time.seconds
-            calc_Hours, remainder = divmod(total_Seconds, 3600)
-            calc_Minutes, calc_Seconds = divmod(remainder, 60)
+                total_Seconds = calc_Close_Time.seconds
+                calc_Hours, remainder = divmod(total_Seconds, 3600)
+                calc_Minutes, calc_Seconds = divmod(remainder, 60)
 
-            formatted_Calc_Time.set('Time till Close {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
-            set_Countdown_Label.pack()
+                formatted_Calc_Time.set('Time till Close {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
+                set_Countdown_Label.pack()
 
-            time.sleep(1)
+                time.sleep(1)
 
-        if timer_Thread_Switch == True and open_Coop_Check_Switch == True:
-            close_Coop()
+            if timer_Thread_Switch == True and open_Coop_Check_Switch == True:
+                close_Coop()
+            elif timer_Thread_Switch == True and open_Coop_Check_Switch == False:
+                set_Countdown_Label.pack_forget()
+                coop_Timer_Loop_Thread = threading.Thread(target=coop_Check_Switch_Loop(parsed_Close_Time, parsed_Open_Time))
+                coop_Timer_Loop_Thread.daemon = True
+                coop_Timer_Loop_Thread.start()
 
     else:
-        if open_Coop_Check_Switch == True:
+        if timer_Thread_Switch == True and open_Coop_Check_Switch == True:
             coop_Timer_Loop_Thread = threading.Thread(target=coop_Check_Switch_Loop(parsed_Close_Time, parsed_Open_Time))
             coop_Timer_Loop_Thread.daemon = True
             coop_Timer_Loop_Thread.start()
+        else:
+            while total_Seconds != 0 and timer_Thread_Switch == True and open_Coop_Check_Switch == False:
+                door_Schedule_Off_Label.pack_forget()
+                current_Time = get_Current_Time()
+                calc_Open_Time = parsed_Open_Time - current_Time
+                formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
 
-        while total_Seconds != 0 and timer_Thread_Switch == True and open_Coop_Check_Switch == False:
-            door_Schedule_Off_Label.pack_forget()
-            current_Time = get_Current_Time()
-            calc_Open_Time = parsed_Open_Time - current_Time
-            formatted_Current_Time = datetime.strftime(current_Time, '%H:%M:%S')
+                total_Seconds = calc_Open_Time.seconds
+                calc_Hours, remainder = divmod(total_Seconds, 3600)
+                calc_Minutes, calc_Seconds = divmod(remainder, 60)
 
-            total_Seconds = calc_Open_Time.seconds
-            calc_Hours, remainder = divmod(total_Seconds, 3600)
-            calc_Minutes, calc_Seconds = divmod(remainder, 60)
+                formatted_Calc_Time.set('Time till Open {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
+                set_Countdown_Label.pack()
 
-            formatted_Calc_Time.set('Time till Open {0:02}:{1:02}:{2:02}'.format(calc_Hours, calc_Minutes, calc_Seconds))
-            set_Countdown_Label.pack()
+                time.sleep(1)
 
-            time.sleep(1)
-
-        if timer_Thread_Switch == True and open_Coop_Check_Switch == False:
-            open_Coop()
+            if timer_Thread_Switch == True and open_Coop_Check_Switch == False:
+                open_Coop()
+            elif timer_Thread_Switch == True and open_Coop_Check_Switch == True:
+                set_Countdown_Label.pack_forget()
+                coop_Timer_Loop_Thread = threading.Thread(target=coop_Check_Switch_Loop(parsed_Close_Time, parsed_Open_Time))
+                coop_Timer_Loop_Thread.daemon = True
+                coop_Timer_Loop_Thread.start()
 
 # Defining Functions for Opening and Closing Coop door
 def open_Coop():
     global door_Status_Var
+    global open_Coop_Check_Switch
+    global door_In_Operation
+    open_Coop_Check_Switch = True
+    door_In_Operation = True
 
     # Set buttons to DISABLE till operation ends
     open_Button['state'] = DISABLED
@@ -212,6 +244,7 @@ def open_Coop():
     door_Status_Var.set("Opening Coop Door")
     label_Door_Status['fg'] = "red"
     set_Countdown_Label.pack_forget()
+    door_Schedule_Off_Label.pack_forget()
 
     # Start set_Open_Relay_On in new thread to avoid window lockup
     t_Open = threading.Thread(target=set_Open_Relay_On)
@@ -219,6 +252,10 @@ def open_Coop():
 
 def close_Coop():
     global door_Status_Var
+    global open_Coop_Check_Switch
+    global door_In_Operation
+    open_Coop_Check_Switch = False
+    door_In_Operation = True
 
     # Set buttons to DISABLE till operation ends
     open_Button['state'] = DISABLED
@@ -228,6 +265,7 @@ def close_Coop():
     door_Status_Var.set("Closing Coop Door")
     label_Door_Status['fg'] = "red"
     set_Countdown_Label.pack_forget()
+    door_Schedule_Off_Label.pack_forget()
 
     # Show Progress bar
     door_Progress.pack(pady=10)
@@ -238,9 +276,8 @@ def close_Coop():
 
 def set_Open_Relay_On():
     global door_Status_Var
-    global open_Coop_Check_Switch
-    open_Coop_Check_Switch = True
-    door_Schedule_Off_Label.pack_forget()
+    global door_In_Operation
+    
     # 
     # GPIO.setmode(GPIO.BCM)
 
@@ -274,21 +311,22 @@ def set_Open_Relay_On():
     status_Bar['text'] = "Coop Status = Open"
 
     # Turn Button Status back to NORMAL Operation
-    open_Button['state'] = NORMAL
+    open_Button['state'] = DISABLED
     close_Button['state'] = NORMAL
 
     # Hide Door Progress Bar
     door_Progress.pack_forget()
+
+    # Set door in operation variable to False
+    door_In_Operation = False
 
     if time_Open_Close.get() == 1:
         set_Timer_Thread()
 
 def set_Close_Relay_On():
     global door_Status_Var
-    global open_Coop_Check_Switch
-    open_Coop_Check_Switch = False
-    door_Schedule_Off_Label.pack_forget()
-
+    global door_In_Operation
+    
     # 
     # GPIO.setmode(GPIO.BCM)
 
@@ -323,10 +361,13 @@ def set_Close_Relay_On():
 
     # Turn Button Status back to NORMAL Operation
     open_Button['state'] = NORMAL
-    close_Button['state'] = NORMAL
+    close_Button['state'] = DISABLED
 
     # Hide Progress bar
     door_Progress.pack_forget()
+
+    # Set door_In_Operation variable to false
+    door_In_Operation = False
     
     if time_Open_Close.get() == 1:
         set_Timer_Thread()
@@ -395,9 +436,9 @@ close_Time_Twelve_Hour = StringVar()
 formatted_Calc_Time = StringVar()
 
 # Default variable settins
-var_Open_Hour.set('6')
+var_Open_Hour.set('06')
 var_Open_Minute.set('00')
-var_Close_Hour.set('8')
+var_Close_Hour.set('08')
 var_Close_Minute.set('00')
 
 # Set Variables for AM/PM Radio Buttons
@@ -424,7 +465,7 @@ time_Check_Button.pack(side=BOTTOM, fill=X)
 # Setup Labels, Spinbox, and Radio Buttons to receive time inputs for opening the Coop
 input_Open_Label = Label(main_Frame4, text='Set time to open coop ', font='none 12', fg='black')
 input_Open_Label.pack(side=LEFT, ipadx=3, pady=5)
-input_Open_Hour = ttk.Spinbox(main_Frame4, from_ = '1', to= '12',textvariable = var_Open_Hour, \
+input_Open_Hour = ttk.Spinbox(main_Frame4, from_ =1, to=12, format='%02.0f', textvariable = var_Open_Hour, \
      width=4, wrap=True) 
 input_Open_Hour.config(background = 'white')
 input_Open_Hour.pack(side=LEFT, pady=5)      
@@ -440,7 +481,7 @@ pm_Open_Radiobutton.pack(side=BOTTOM, padx=5)
 # Setup Labels, Spinbox, and Radio Buttons to receive time inputs for closing the Coop
 input_Close_Label = Label(main_Frame5, fg='black', text='Set time to Close coop ', font='none 12')
 input_Close_Label.pack(side=LEFT, pady=5)
-input_Close_Hour = ttk.Spinbox(main_Frame5, from_ = '1', to= '12', textvariable = var_Close_Hour, \
+input_Close_Hour = ttk.Spinbox(main_Frame5, from_=1, to=12, format='%02.0f', textvariable = var_Close_Hour, \
     width=4, wrap=True) 
 input_Close_Hour.pack(side=LEFT, pady=5)   
 input_Close_Minute = ttk.Spinbox(main_Frame5, from_=00, to=59, format='%02.0f', textvariable = var_Close_Minute, \
