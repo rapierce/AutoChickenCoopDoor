@@ -3,7 +3,7 @@
 # Import Libraries
 from tkinter import *
 from tkinter import ttk 
-#  import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 import threading
 from datetime import datetime
@@ -279,31 +279,31 @@ def set_Open_Relay_On():
     global door_In_Operation
     
     # 
-    # GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BCM)
 
-    # # init pin numbers
-    # pin_Open = [6]
+    # init pin numbers
+    pin_Open = [6]
 
-    # # set mode default state is 'low'
-    # GPIO.setup(pin_Open, GPIO.OUT) 
+    # set mode default state is 'low'
+    GPIO.setup(pin_Open, GPIO.OUT) 
    
-    # # Activate Open Relay to High (High turns Relay on)
-    # GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
+    # Activate Open Relay to High (High turns Relay on)
+    GPIO.output(pin_Open, GPIO.HIGH)     # Activate Open relay
     
     # Start Timer for duration actuator will be activated
     timer = 0
     bar_Status = 0
-    while timer <= 10:
-        timer = timer + .5
+    while timer <= 100:
+        timer = timer + 1
         bar_Status = bar_Status +1
         door_Progress['value'] = bar_Status
-        time.sleep(.5)
+        time.sleep(1)
 
     # set Open relay back to low (Turns Relay off)
-    # GPIO.output(pin_Open, GPIO.LOW)
+    GPIO.output(pin_Open, GPIO.LOW)
 
     # Reset GPIO settings
-    # GPIO.cleanup()
+    GPIO.cleanup()
 
     # Set Label Variables defining current state of Coop Door
     door_Status_Var.set("Coop Door is Open")
@@ -328,31 +328,31 @@ def set_Close_Relay_On():
     global door_In_Operation
     
     # 
-    # GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BCM)
 
-    # # # init pin numbers
-    # pin_Close = [22]
+    # # init pin numbers
+    pin_Close = [22]
 
-    # # # set mode default state is 'low'
-    # GPIO.setup(pin_Close, GPIO.OUT)
+    # # set mode default state is 'low'
+    GPIO.setup(pin_Close, GPIO.OUT)
    
-    # # # Activate Close Relay to High
-    # GPIO.output(pin_Close, GPIO.HIGH)      # Activate Close relay
+    # # Activate Close Relay to High
+    GPIO.output(pin_Close, GPIO.HIGH)      # Activate Close relay
 
     # Start Timer for duration actuator will be activated
     timer = 0
     bar_Status = 0
-    while timer <= 10:
-        timer = timer + .5
+    while timer <= 100:
+        timer = timer + 1
         bar_Status = bar_Status + 1
         door_Progress['value'] = bar_Status
-        time.sleep(.5)
+        time.sleep(1)
 
     # set Close relay back to low (off)
-    # GPIO.output(pin_Close, GPIO.LOW)
+    GPIO.output(pin_Close, GPIO.LOW)
 
     # Reset GPIO settings
-    # GPIO.cleanup()
+    GPIO.cleanup()
 
     # Set Label variables defining the current state of Coop Door
     door_Status_Var.set("Coop Door is Closed")
