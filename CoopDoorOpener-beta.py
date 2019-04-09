@@ -95,7 +95,6 @@ def coop_Check_Switch_Loop(clos_Time, op_Time):
             schedule_Off_Var.set('Open Coop to continue schedule')
             door_Schedule_Off_Label.pack()
 
-            print (timer_Thread_Switch)
 
             current_Time = get_Current_Time()
             calc_Close_Time = clos_Time - current_Time
