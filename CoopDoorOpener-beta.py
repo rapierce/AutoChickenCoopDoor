@@ -13,6 +13,7 @@ time_Open_Close = ""
 timer_Thread_Switch = True
 open_Coop_Check_Switch = True
 door_In_Operation = False
+first_Time_Run = True
 
 
 # Defining Functions for turning Time Settings on and off
@@ -232,6 +233,7 @@ def open_Coop():
     global door_Status_Var
     global open_Coop_Check_Switch
     global door_In_Operation
+    global first_Time_Run
     open_Coop_Check_Switch = True
     door_In_Operation = True
 
@@ -243,7 +245,10 @@ def open_Coop():
     door_Progress.pack(pady=10)
 
     # Set Label variables to current status of Coop Door
-    door_Status_Var.set("Opening Coop Door")
+    if first_Time_Run == True:
+        door_Status_Var.set('Calibrating Coop Door')
+    else:
+        door_Status_Var.set("Opening Coop Door")
     label_Door_Status['fg'] = "red"
     set_Countdown_Label.pack_forget()
     door_Schedule_Off_Label.pack_forget()
@@ -321,6 +326,7 @@ def set_Open_Relay_On():
 
     # Set door in operation variable to False
     door_In_Operation = False
+    first_Time_Run = False
 
     if time_Open_Close.get() == 1:
         set_Timer_Thread()
@@ -515,6 +521,10 @@ door_Progress = ttk.Progressbar(main_Frame10, orient=HORIZONTAL,length=100, mode
 
 # Message warning door is in opposite status of the Open/Close timer
 door_Schedule_Off_Label = Label (main_Frame11, textvariable=schedule_Off_Var, font = 'none 12 bold', fg = 'red')
+
+# Calibration Cycle 
+if first_Time_Run == True:
+    open_Coop()
 
 # Call time_Setting function to enable or disable time settings operation
 enable_Disable_Time_Setting()
