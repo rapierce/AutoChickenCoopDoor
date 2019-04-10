@@ -8,6 +8,7 @@ import time
 import threading
 from datetime import datetime
 
+# Setting Global Variables
 door_Status_Var = ""
 time_Open_Close = ""
 timer_Thread_Switch = True
@@ -16,12 +17,14 @@ door_In_Operation = False
 first_Time_Run = True
 
 
-# Defining Functions for turning Time Settings on and off
+# Defining Functions
 
+# Retrieves and returns current time
 def get_Current_Time():
     curr_Time = datetime.now()
     return curr_Time
 
+# Enables or Disables Time functions when checkbox is clicked or unclicked
 def enable_Disable_Time_Setting():
     global timer_Thread_Switch
     global door_In_Operation
@@ -31,6 +34,7 @@ def enable_Disable_Time_Setting():
     else:
         enable_Time_Functions()
 
+# Sets time_Thread_Switch variable to true and starts the Open/Close timers
 def set_Timer_Thread():
     global timer_Thread_Switch
     timer_Thread_Switch = True
@@ -38,6 +42,7 @@ def set_Timer_Thread():
     timer_Thread.daemon = True
     timer_Thread.start()
 
+# Disables Timer Function when timer Checkbox isn't clicked and after setting times
 def disable_Time_Functions():
     input_Open_Hour['state'] = DISABLED
     input_Open_Minute['state'] = DISABLED
@@ -61,7 +66,8 @@ def disable_Time_Functions():
         door_Schedule_Off_Label.pack_forget()
         set_Countdown_Label.pack_forget()
     
-    
+
+# Enables timer settings to set times for Open/Close
 def enable_Time_Functions():
     change_Time_Button.pack_forget()
     apply_Time_Button.pack()
@@ -82,6 +88,9 @@ def enable_Time_Functions():
     set_Open_Time_Label.pack(side=LEFT)
     set_Close_Time_Label.pack(side=LEFT)
 
+# This function runs if the manual Open/Close buttons are selected and the Coop door is off it's schedule
+#    if the door doesn't manually get swtiched back to the schedule, the door will ignore it's next scheduled operation 
+#       and continue normal schedule.
 def coop_Check_Switch_Loop(clos_Time, op_Time):
     global open_Coop_Check_Switch
     global door_In_Operation
@@ -89,6 +98,7 @@ def coop_Check_Switch_Loop(clos_Time, op_Time):
     door_Schedule_Off_Label.pack_forget()
     set_Countdown_Label.pack_forget()
     total_Seconds = 1
+
     while door_In_Operation == True:
         pass
     if timer_Thread_Switch == True and open_Coop_Check_Switch == False:
@@ -135,6 +145,7 @@ def coop_Check_Switch_Loop(clos_Time, op_Time):
     set_Countdown_Label.pack_forget()
     enable_Disable_Time_Setting()
 
+#  Format time function sets all the time formats and runs the scheduled operation at on it's time schedule
 def format_Time():
     global timer_Thread_Switch
     global open_Coop_Check_Switch
@@ -281,6 +292,7 @@ def close_Coop():
     t_Close = threading.Thread(target=set_Close_Relay_On)
     t_Close.start()
 
+# Function to open coop door
 def set_Open_Relay_On():
     global door_Status_Var
     global door_In_Operation
@@ -331,6 +343,7 @@ def set_Open_Relay_On():
     if time_Open_Close.get() == 1:
         set_Timer_Thread()
 
+# Function to close coop door
 def set_Close_Relay_On():
     global door_Status_Var
     global door_In_Operation
